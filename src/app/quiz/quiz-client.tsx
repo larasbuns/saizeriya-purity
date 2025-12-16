@@ -1,10 +1,12 @@
 'use client';
 
 import { useForm } from 'react-hook-form';
+import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState, useEffect } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
@@ -22,6 +24,7 @@ type QuizClientProps = {
 export function QuizClient({ outlets }: QuizClientProps) {
   const [visitedCount, setVisitedCount] = useState(0);
   const [progress, setProgress] = useState(0);
+  const router = useRouter();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -39,10 +42,15 @@ export function QuizClient({ outlets }: QuizClientProps) {
     return () => subscription.unsubscribe();
   }, [form]);
 
+  function onSubmit(data: z.infer<typeof FormSchema>) {
+    const score = data.outlets.length;
+    router.push(`/results?score=${score}`);
+  }
+
   return (
     <Card className="w-full max-w-2xl shadow-lg border-2 border-primary/10">
       <Form {...form}>
-        <form>
+        <form onSubmit={form.handleSubmit(onSubmit)}>
           <CardHeader>
             <CardTitle>Saizeriya Outlet Checklist</CardTitle>
             <CardDescription>Select the outlets you have been to.</CardDescription>
@@ -91,6 +99,7 @@ export function QuizClient({ outlets }: QuizClientProps) {
                 <p className="font-bold text-lg text-primary">{visitedCount} / {correctOutlets.length} visited</p>
                 <Progress value={progress} className="mt-2 h-3" />
             </div>
+            <Button type="submit" className="w-full mt-4">See My Results</Button>
           </CardFooter>
         </form>
       </Form>
