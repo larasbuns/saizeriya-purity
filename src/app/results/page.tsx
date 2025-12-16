@@ -16,20 +16,20 @@ function Results() {
   let description = '';
 
   if (score === 0) {
-    title = 'Saizeriya Newbie';
-    description = "Looks like you're just getting started on your Saizeriya journey!";
+    title = 'Saizeriya Infant';
+    description = "You are seriously missing out on the best Japanese-Italian Restaurant on the market.";
   } else if (score >= 1 && score <= 10) {
-    title = 'Saizeriya Explorer';
-    description = 'You\'ve visited a few outlets. Keep exploring, there are many more to discover!';
+    title = 'Saizeriya Toddler';
+    description = 'You either do not go to Saizeriya often or stay loyal to a few outlets.';
   } else if (score >= 11 && score <= 24) {
-    title = 'Saizeriya Regular';
-    description = 'You clearly enjoy Saizeriya! You\'re well on your way to becoming a true fan.';
+    title = 'Mid Saizeriya Fan';
+    description = 'Could be better, but not something you\'d every say about my beloved tiramisu.';
   } else if (score >= 25 && score < total) {
-    title = 'Saizeriya Super Fan';
-    description = 'Wow! You\'ve been to an impressive number of outlets. You\'re a dedicated fan!';
+    title = 'Ranked Saizeriya Fan';
+    description = 'Wow. Saizeriya consumption is a competition to you, but the ravioli remains undefeated. ';
   } else if (score === total) {
-    title = 'Ultimate Saizeriya Master';
-    description = 'Incredible! You have visited every single Saizeriya in Singapore. You are a true legend!';
+    title = 'Saizeriya GOAT';
+    description = 'Incredible! You’ve visited every Saizeriya in Singapore. If anyone can summon the discontinued squid ink, it’s you.';
   }
 
   return (

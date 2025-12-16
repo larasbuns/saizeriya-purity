@@ -15,7 +15,7 @@ export default function Home() {
             My Saizeriya Checklist
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-md">
-            Keep track of every Saizeriya outlet you've been to in Singapore. How many have you visited?
+            Keep track of every Saizeriya outlet you have visited to find out how big of a fan you are!
           </p>
         </header>
         <QuizClient outlets={quizOutlets} />

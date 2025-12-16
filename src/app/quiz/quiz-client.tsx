@@ -68,22 +68,37 @@ export function QuizClient({ outlets }: QuizClientProps) {
                         control={form.control}
                         name="outlets"
                         render={({ field }) => {
+                          const isChecked = field.value?.includes(outlet);
                           return (
                             <FormItem
                               key={outlet}
-                              className="flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4 transition-colors hover:bg-black/5"
+                              className="flex flex-row items-start space-x-3 space-y-0"
                             >
                               <FormControl>
                                 <Checkbox
-                                  checked={field.value?.includes(outlet)}
+                                  checked={isChecked}
                                   onCheckedChange={(checked) => {
                                     return checked
                                       ? field.onChange([...field.value, outlet])
-                                      : field.onChange(field.value?.filter((value) => value !== outlet));
+                                      : field.onChange(
+                                          field.value?.filter(
+                                            (value) => value !== outlet
+                                          )
+                                        );
                                   }}
+                                  className="hidden"
+                                  id={outlet}
                                 />
                               </FormControl>
-                              <FormLabel className="font-normal">{outlet}</FormLabel>
+                              <FormLabel
+                                htmlFor={outlet}
+                                className="font-normal flex flex-row items-center space-x-3 space-y-0 rounded-md border p-4 transition-colors hover:bg-black/5 cursor-pointer w-full"
+                              >
+                                <div className={`w-4 h-4 shrink-0 rounded-sm border border-primary ${isChecked ? 'bg-primary text-primary-foreground' : ''} flex items-center justify-center`}>
+                                   {isChecked && <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4"><path d="M20 6 9 17l-5-5"></path></svg>}
+                                </div>
+                                <span>{outlet}</span>
+                              </FormLabel>
                             </FormItem>
                           );
                         }}
