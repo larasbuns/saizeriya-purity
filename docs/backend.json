@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "QuizResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QuizResponse",
+      "type": "object",
+      "description": "Represents a user's response to a Saizeriya location quiz.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the quiz response."
+        },
+        "userName": {
+          "type": "string",
+          "description": "The name of the user who submitted the quiz."
+        },
+        "selectedOutletIds": {
+          "type": "array",
+          "description": "References to SaizeriyaOutlet entities selected by the user.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time the quiz was submitted.",
+          "format": "date-time"
+        },
+        "comment": {
+          "type": "string",
+          "description": "The comment generated based on the quiz result."
+        }
+      },
+      "required": [
+        "id",
+        "userName",
+        "selectedOutletIds",
+        "submissionDate",
+        "comment"
+      ]
+    },
+    "SaizeriyaOutlet": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SaizeriyaOutlet",
+      "type": "object",
+      "description": "Represents a Saizeriya outlet in Singapore.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the Saizeriya outlet."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the Saizeriya outlet."
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the Saizeriya outlet."
+        },
+        "isCorrect": {
+          "type": "boolean",
+          "description": "Indicates whether this outlet is a correct answer in the quiz."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "address",
+        "isCorrect"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/saizeriyaOutlets/{saizeriyaOutletId}",
+        "definition": {
+          "entityName": "SaizeriyaOutlet",
+          "schema": {
+            "$ref": "#/backend/entities/SaizeriyaOutlet"
+          },
+          "description": "Stores information about Saizeriya outlets. The ID is the document ID.",
+          "params": [
+            {
+              "name": "saizeriyaOutletId",
+              "description": "The unique identifier for the Saizeriya outlet."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/quizResponses/{quizResponseId}",
+        "definition": {
+          "entityName": "QuizResponse",
+          "schema": {
+            "$ref": "#/backend/entities/QuizResponse"
+          },
+          "description": "Stores quiz responses submitted by users. The ID is the document ID.",
+          "params": [
+            {
+              "name": "quizResponseId",
+              "description": "The unique identifier for the quiz response."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore data structure is designed to store quiz responses and Saizeriya outlet information. It prioritizes simplicity and direct access for efficient data retrieval and management.  The `saizeriyaOutlets` collection stores information about each outlet.  The `quizResponses` collection stores each quiz submission. To support QAPs, there is no need to filter on user data.  Authorization independence is achieved because access to quiz responses do not depend on the parent/child hierarchy, it's an independent collection."
+  }
+}

@@ -1,0 +1,102 @@
+/**
+ * Core Philosophy:
+ * This ruleset establishes a security model for a quiz application. It is designed
+ * to be secure by default while allowing for rapid prototyping. The model treats
+ * quiz data (`saizeriyaOutlets`) as public, read-only information, while quiz
+ * submissions (`quizResponses`) can be created by any authenticated user (including
+ * anonymous users) and are then publicly readable.
+ *
+ * Data Structure:
+ * The data is organized into two distinct, top-level collections:
+ * - /saizeriyaOutlets/{saizeriyaOutletId}: Contains the list of all possible quiz answers.
+ * - /quizResponses/{quizResponseId}: Stores each user's submission.
+ *
+ * Key Security Decisions:
+ * - Public Data: The `saizeriyaOutlets` collection is publicly readable by anyone,
+ *   but all write operations are disabled. This data is considered static and
+ *   should only be managed directly from the Firebase Console or a trusted admin SDK.
+ * - Anonymous Submissions: Any user who is authenticated, even anonymously, can
+ *   create a `quizResponse`. This supports the "ask for name beforehand" flow
+ *   without requiring full user registration.
+ * - Immutable Responses: CRITICAL: Because the `QuizResponse` entity does not
+ *   contain an `ownerId` or `userId` field to link the submission back to the
+ *   creator, all `update` and `delete` operations are currently disabled. This is a
+ *   critical security measure to prevent users from modifying or deleting each
+ *   other's submissions. To enable these features, the application must add an
+ *   ownership field to the `QuizResponse` documents.
+ * - Flexible Schema: In line with the prototyping philosophy, these rules do not
+ *   validate the shape or data types of the documents being written. Authorization is
+ *   strictly enforced, but the data schema remains flexible for iteration.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // -------------------------------------------------------------------------
+    // Helper Functions
+    // -------------------------------------------------------------------------
+
+    /**
+     * Checks if the user is authenticated (not necessarily anonymous).
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    // -------------------------------------------------------------------------
+    // Collection: saizeriyaOutlets
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description
+     *   Manages Saizeriya outlet information. This data is considered public
+     *   and is intended to be read by all users, but cannot be modified by them.
+     * @path
+     *   /saizeriyaOutlets/{saizeriyaOutletId}
+     * @allow
+     *   (get, list) An unauthenticated user reads an outlet's address.
+     * @deny
+     *   (create, update, delete) Any user attempts to add, change, or remove an outlet.
+     * @principle
+     *   Provides public read access to static application data while preventing all
+     *   client-side modifications. Writes should be handled by a trusted server environment.
+     */
+    match /saizeriyaOutlets/{saizeriyaOutletId} {
+      allow get, list: if true;
+      allow create: if false;
+      allow update: if false;
+      allow delete: if false;
+    }
+
+    // -------------------------------------------------------------------------
+    // Collection: quizResponses
+    // -------------------------------------------------------------------------
+
+    /**
+     * @description
+     *   Stores user-submitted quiz responses. Any authenticated user (including
+     *   anonymous) can submit a response, and all responses are publicly viewable.
+     * @path
+     *   /quizResponses/{quizResponseId}
+     * @allow
+     *   (create) An anonymously signed-in user submits their quiz answers.
+     *   (get, list) Any user views the results of a previously submitted quiz.
+     * @deny
+     *   (create) An unauthenticated user tries to submit a quiz.
+     *   (update, delete) Any user tries to change or delete a response after it's been submitted.
+     * @principle
+     *   Allows creation of data by authenticated users but makes that data immutable
+     *   from the client-side due to a schema limitation, preventing unauthorized modifications.
+     */
+    match /quizResponses/{quizResponseId} {
+      allow get, list: if true;
+      allow create: if isSignedIn();
+      // CRITICAL: Cannot implement owner-only writes for update and delete.
+      // The 'QuizResponse' entity in the data model is missing an 'ownerId' or 'userId' field.
+      // Without this field, it is impossible to verify that the user making the request
+      // is the original author of the document. These operations are disabled for security.
+      allow update: if false; // TODO: Add owner validation once the schema is updated with an ownership field (e.g., resource.data.ownerId == request.auth.uid).
+      allow delete: if false; // TODO: Add owner validation once the schema is updated with an ownership field (e.g., resource.data.ownerId == request.auth.uid).
+    }
+  }
+}
