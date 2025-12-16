@@ -46,7 +46,7 @@ export default function Home() {
                   y="185"
                   fontFamily="sans-serif"
                   fontSize="20"
-                  fill="#006837"
+                  fill="#3a2e25"
                   textAnchor="middle"
                   fontWeight="bold"
                 >
