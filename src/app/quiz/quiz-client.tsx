@@ -5,15 +5,21 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState, useEffect } from 'react';
+import { useFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { Input } from '@/components/ui/input';
 import { correctOutlets } from './data';
+import { useToast } from '@/hooks/use-toast';
 
 const FormSchema = z.object({
+  name: z.string().min(1, { message: 'Please enter your name.' }),
   outlets: z.array(z.string()),
 });
 
@@ -25,10 +31,13 @@ export function QuizClient({ outlets }: QuizClientProps) {
   const [visitedCount, setVisitedCount] = useState(0);
   const [progress, setProgress] = useState(0);
   const router = useRouter();
+  const { firestore, auth } = useFirebase();
+  const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
     defaultValues: {
+      name: '',
       outlets: [],
     },
   });
@@ -42,9 +51,35 @@ export function QuizClient({ outlets }: QuizClientProps) {
     return () => subscription.unsubscribe();
   }, [form]);
 
-  function onSubmit(data: z.infer<typeof FormSchema>) {
-    const score = data.outlets.length;
-    router.push(`/results?score=${score}`);
+  async function onSubmit(data: z.infer<typeof FormSchema>) {
+    if (!firestore) {
+        toast({
+            title: 'Error',
+            description: 'Database not available. Please try again later.',
+            variant: 'destructive',
+        });
+        return;
+    }
+    
+    const quizResponse = {
+        userName: data.name,
+        selectedOutletIds: data.outlets,
+        submissionDate: new Date().toISOString(),
+        score: data.outlets.length,
+    };
+
+    try {
+        const responsesCollection = collection(firestore, 'quizResponses');
+        await addDocumentNonBlocking(responsesCollection, quizResponse);
+        router.push(`/results?score=${data.outlets.length}`);
+    } catch (error) {
+        console.error("Error writing document: ", error);
+        toast({
+            title: 'Submission Failed',
+            description: 'Could not save your checklist. Please try again.',
+            variant: 'destructive',
+        });
+    }
   }
 
   return (
@@ -55,12 +90,26 @@ export function QuizClient({ outlets }: QuizClientProps) {
             <CardTitle>Saizeriya Outlet Checklist</CardTitle>
             <CardDescription>Select the outlets you have been to.</CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="space-y-6">
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Your Name</FormLabel>
+                  <FormControl>
+                    <Input placeholder="Enter your name" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
             <FormField
               control={form.control}
               name="outlets"
               render={() => (
                 <FormItem>
+                   <FormLabel>Outlets</FormLabel>
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     {outlets.map((outlet) => (
                       <FormField

@@ -1,44 +1,5 @@
 {
   "entities": {
-    "QuizResponse": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "QuizResponse",
-      "type": "object",
-      "description": "Represents a user's response to a Saizeriya location quiz.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the quiz response."
-        },
-        "userName": {
-          "type": "string",
-          "description": "The name of the user who submitted the quiz."
-        },
-        "selectedOutletIds": {
-          "type": "array",
-          "description": "References to SaizeriyaOutlet entities selected by the user.",
-          "items": {
-            "type": "string"
-          }
-        },
-        "submissionDate": {
-          "type": "string",
-          "description": "The date and time the quiz was submitted.",
-          "format": "date-time"
-        },
-        "comment": {
-          "type": "string",
-          "description": "The comment generated based on the quiz result."
-        }
-      },
-      "required": [
-        "id",
-        "userName",
-        "selectedOutletIds",
-        "submissionDate",
-        "comment"
-      ]
-    },
     "SaizeriyaOutlet": {
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "SaizeriyaOutlet",
@@ -56,25 +17,47 @@
         "address": {
           "type": "string",
           "description": "The address of the Saizeriya outlet."
+        }
+      },
+      "required": ["id", "name", "address"]
+    },
+    "QuizResponse": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "QuizResponse",
+      "type": "object",
+      "description": "Represents a user's response to a Saizeriya location quiz.",
+      "properties": {
+        "userName": {
+          "type": "string",
+          "description": "The name of the user who submitted the quiz."
         },
-        "isCorrect": {
-          "type": "boolean",
-          "description": "Indicates whether this outlet is a correct answer in the quiz."
+        "selectedOutletIds": {
+          "type": "array",
+          "description": "Array of strings representing the names of the selected outlets.",
+          "items": {
+            "type": "string"
+          }
+        },
+        "submissionDate": {
+          "type": "string",
+          "description": "The date and time the quiz was submitted.",
+          "format": "date-time"
+        },
+        "score": {
+          "type": "number",
+          "description": "The number of outlets selected by the user."
         }
       },
       "required": [
-        "id",
-        "name",
-        "address",
-        "isCorrect"
+        "userName",
+        "selectedOutletIds",
+        "submissionDate",
+        "score"
       ]
     }
   },
   "auth": {
-    "providers": [
-      "password",
-      "anonymous"
-    ]
+    "providers": ["anonymous"]
   },
   "firestore": {
     "structure": [
@@ -85,7 +68,7 @@
           "schema": {
             "$ref": "#/backend/entities/SaizeriyaOutlet"
           },
-          "description": "Stores information about Saizeriya outlets. The ID is the document ID.",
+          "description": "Stores information about Saizeriya outlets.",
           "params": [
             {
               "name": "saizeriyaOutletId",
@@ -101,7 +84,7 @@
           "schema": {
             "$ref": "#/backend/entities/QuizResponse"
           },
-          "description": "Stores quiz responses submitted by users. The ID is the document ID.",
+          "description": "Stores quiz responses submitted by users.",
           "params": [
             {
               "name": "quizResponseId",
@@ -110,7 +93,6 @@
           ]
         }
       }
-    ],
-    "reasoning": "The Firestore data structure is designed to store quiz responses and Saizeriya outlet information. It prioritizes simplicity and direct access for efficient data retrieval and management.  The `saizeriyaOutlets` collection stores information about each outlet.  The `quizResponses` collection stores each quiz submission. To support QAPs, there is no need to filter on user data.  Authorization independence is achieved because access to quiz responses do not depend on the parent/child hierarchy, it's an independent collection."
+    ]
   }
 }
