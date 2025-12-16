@@ -56,10 +56,10 @@ export default function Home() {
             </svg>
           </div>
           <h1 className="font-headline text-5xl font-bold text-primary md:text-6xl">
-            Saizeriya Fan Finder
+            My Saizeriya Checklist
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-md">
-            Think you know your Saizeriya? Select all the real outlets in Singapore to prove you're a true fan.
+            Keep track of every Saizeriya outlet you've been to in Singapore. How many have you visited?
           </p>
         </header>
         <QuizClient outlets={quizOutlets} />

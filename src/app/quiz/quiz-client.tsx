@@ -1,24 +1,17 @@
 'use client';
 
-import { useFormState } from 'react-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
-import { submitQuiz, type QuizState } from '@/app/actions';
-import { SubmitButton } from './submit-button';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
-import { Button } from '@/components/ui/button';
-import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
-import { CheckCircle2, XCircle, Award } from 'lucide-react';
+import { Progress } from '@/components/ui/progress';
 
 const FormSchema = z.object({
-  outlets: z.array(z.string()).refine((value) => value.some((item) => item), {
-    message: 'You have to select at least one item.',
-  }),
+  outlets: z.array(z.string()),
 });
 
 type QuizClientProps = {
@@ -26,9 +19,8 @@ type QuizClientProps = {
 };
 
 export function QuizClient({ outlets }: QuizClientProps) {
-  const initialState: QuizState = {};
-  const [state, formAction] = useFormState(submitQuiz, initialState);
-  const [showResult, setShowResult] = useState(false);
+  const [visitedCount, setVisitedCount] = useState(0);
+  const [progress, setProgress] = useState(0);
 
   const form = useForm<z.infer<typeof FormSchema>>({
     resolver: zodResolver(FormSchema),
@@ -38,55 +30,21 @@ export function QuizClient({ outlets }: QuizClientProps) {
   });
 
   useEffect(() => {
-    if (state?.comment) {
-      setShowResult(true);
-    }
-    if (state?.message) {
-      // Potentially show a toast for errors
-    }
-  }, [state]);
-
-  const handleTryAgain = () => {
-    form.reset();
-    setShowResult(false);
-  };
-
-  if (showResult && state.comment) {
-    return (
-      <Card className="w-full max-w-2xl shadow-xl animate-in fade-in zoom-in-95">
-        <CardHeader className="items-center text-center">
-            {state.isCorrect ? (
-                <CheckCircle2 className="h-16 w-16 text-green-500 mb-2" />
-            ) : (
-                <XCircle className="h-16 w-16 text-destructive mb-2" />
-            )}
-          <CardTitle className="text-2xl">Quiz Result</CardTitle>
-        </CardHeader>
-        <CardContent className="text-center">
-          <p className="text-lg text-muted-foreground">{state.comment}</p>
-        </CardContent>
-        <CardFooter className="flex-col gap-4">
-            {state.isCorrect && (
-                <div className="flex items-center gap-2 rounded-md bg-yellow-100 p-3 text-yellow-800 border border-yellow-200">
-                    <Award className="h-6 w-6"/>
-                    <p className="font-semibold">Certified Saizeriya Superfan!</p>
-                </div>
-            )}
-          <Button onClick={handleTryAgain} className="w-full" variant="outline">
-            Try Again
-          </Button>
-        </CardFooter>
-      </Card>
-    );
-  }
+    const subscription = form.watch((value) => {
+      const selected = value.outlets || [];
+      setVisitedCount(selected.length);
+      setProgress((selected.length / outlets.length) * 100);
+    });
+    return () => subscription.unsubscribe();
+  }, [form, outlets.length]);
 
   return (
     <Card className="w-full max-w-2xl shadow-lg border-2 border-primary/10">
       <Form {...form}>
-        <form action={formAction}>
+        <form>
           <CardHeader>
-            <CardTitle>The Ultimate Saizeriya Challenge</CardTitle>
-            <CardDescription>Which of the following are actual Saizeriya outlets in Singapore?</CardDescription>
+            <CardTitle>Saizeriya Outlet Checklist</CardTitle>
+            <CardDescription>Select the outlets you have been to.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <FormField
@@ -123,18 +81,15 @@ export function QuizClient({ outlets }: QuizClientProps) {
                       />
                     ))}
                   </div>
-                  <FormMessage />
                 </FormItem>
               )}
             />
-            {state?.message && !state.comment && (
-              <Alert variant="destructive">
-                <AlertDescription>{state.message}</AlertDescription>
-              </Alert>
-            )}
           </CardContent>
-          <CardFooter>
-            <SubmitButton />
+          <CardFooter className="flex-col gap-4 items-start">
+             <div className="w-full text-center">
+                <p className="font-bold text-lg text-primary">{visitedCount} / {outlets.length} visited</p>
+                <Progress value={progress} className="mt-2 h-3" />
+            </div>
           </CardFooter>
         </form>
       </Form>
