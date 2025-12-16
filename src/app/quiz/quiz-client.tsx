@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { useState, useEffect } from 'react';
-import { useFirebase } from '@/firebase';
+import { useFirebase, initiateAnonymousSignIn, useUser } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
@@ -32,6 +32,7 @@ export function QuizClient({ outlets }: QuizClientProps) {
   const [progress, setProgress] = useState(0);
   const router = useRouter();
   const { firestore, auth } = useFirebase();
+  const { user, isUserLoading } = useUser();
   const { toast } = useToast();
 
   const form = useForm<z.infer<typeof FormSchema>>({
@@ -43,6 +44,13 @@ export function QuizClient({ outlets }: QuizClientProps) {
   });
 
   useEffect(() => {
+    // When auth has loaded and there's no user, sign in anonymously.
+    if (auth && !isUserLoading && !user) {
+      initiateAnonymousSignIn(auth);
+    }
+  }, [auth, user, isUserLoading]);
+
+  useEffect(() => {
     const subscription = form.watch((value) => {
       const selected = value.outlets || [];
       setVisitedCount(selected.length);
@@ -52,10 +60,10 @@ export function QuizClient({ outlets }: QuizClientProps) {
   }, [form]);
 
   async function onSubmit(data: z.infer<typeof FormSchema>) {
-    if (!firestore) {
+    if (!firestore || !auth?.currentUser) {
         toast({
             title: 'Error',
-            description: 'Database not available. Please try again later.',
+            description: 'Could not connect to the database. Please try again later.',
             variant: 'destructive',
         });
         return;
@@ -70,7 +78,7 @@ export function QuizClient({ outlets }: QuizClientProps) {
 
     try {
         const responsesCollection = collection(firestore, 'quizResponses');
-        await addDocumentNonBlocking(responsesCollection, quizResponse);
+        addDocumentNonBlocking(responsesCollection, quizResponse);
         router.push(`/results?score=${data.outlets.length}`);
     } catch (error) {
         console.error("Error writing document: ", error);
@@ -163,7 +171,7 @@ export function QuizClient({ outlets }: QuizClientProps) {
                 <p className="font-bold text-lg text-primary">{visitedCount} / {correctOutlets.length} visited</p>
                 <Progress value={progress} className="mt-2 h-3" />
             </div>
-            <Button type="submit" className="w-full mt-4">See My Results</Button>
+            <Button type="submit" className="w-full mt-4" disabled={isUserLoading || !user}>See My Results</Button>
           </CardFooter>
         </form>
       </Form>
