@@ -55,10 +55,10 @@ export default function Home() {
               </g>
             </svg>
           </div>
-          <h1 className="font-headline text-4xl font-bold text-primary md:text-5xl">
+          <h1 className="font-headline text-5xl font-bold text-primary md:text-6xl">
             Saizeriya Fan Finder
           </h1>
-          <p className="mt-2 text-lg text-muted-foreground max-w-md">
+          <p className="mt-4 text-lg text-muted-foreground max-w-md">
             Think you know your Saizeriya? Select all the real outlets in Singapore to prove you're a true fan.
           </p>
         </header>
