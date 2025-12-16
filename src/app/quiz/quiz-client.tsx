@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Form, FormControl, FormField, FormItem, FormLabel } from '@/components/ui/form';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Progress } from '@/components/ui/progress';
+import { correctOutlets } from './data';
 
 const FormSchema = z.object({
   outlets: z.array(z.string()),
@@ -33,10 +34,10 @@ export function QuizClient({ outlets }: QuizClientProps) {
     const subscription = form.watch((value) => {
       const selected = value.outlets || [];
       setVisitedCount(selected.length);
-      setProgress((selected.length / outlets.length) * 100);
+      setProgress((selected.length / correctOutlets.length) * 100);
     });
     return () => subscription.unsubscribe();
-  }, [form, outlets.length]);
+  }, [form]);
 
   return (
     <Card className="w-full max-w-2xl shadow-lg border-2 border-primary/10">
@@ -87,7 +88,7 @@ export function QuizClient({ outlets }: QuizClientProps) {
           </CardContent>
           <CardFooter className="flex-col gap-4 items-start">
              <div className="w-full text-center">
-                <p className="font-bold text-lg text-primary">{visitedCount} / {outlets.length} visited</p>
+                <p className="font-bold text-lg text-primary">{visitedCount} / {correctOutlets.length} visited</p>
                 <Progress value={progress} className="mt-2 h-3" />
             </div>
           </CardFooter>
