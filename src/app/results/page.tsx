@@ -23,7 +23,7 @@ function Results() {
     description = 'You either do not go to Saizeriya often or stay loyal to a few outlets.';
   } else if (score >= 11 && score <= 24) {
     title = 'Mid Saizeriya Fan';
-    description = 'Could be better, but not something you\'d every say about my beloved tiramisu.';
+    description = 'Could be better, but not something you\'d evernpm install -g firebase-toolsy say about my beloved tiramisu.';
   } else if (score >= 25 && score < total) {
     title = 'Ranked Saizeriya Fan';
     description = 'Wow. Saizeriya consumption is a competition to you, but the ravioli remains undefeated. ';
