@@ -12,10 +12,10 @@ export default function Home() {
             <img src="https://www.saizeriya.com.au/files/logo.png" alt="Saizeriya Logo" />
           </div>
           <h1 className="font-headline text-5xl font-bold text-primary md:text-6xl">
-            My Saizeriya Checklist
+            Saizeriya Purity Test
           </h1>
           <p className="mt-4 text-lg text-muted-foreground max-w-md">
-            Keep track of every Saizeriya outlet you have visited to find out how big of a fan you are!
+            Caution: This is a bucket list. Completion of all items on this test will likely extreme happiness and fufilment.
           </p>
         </header>
         <QuizClient outlets={quizOutlets} />
