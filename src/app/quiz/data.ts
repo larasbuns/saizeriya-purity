@@ -7,7 +7,7 @@ export const correctOutlets = [
 'Le Quest Mall', 'Leisure Park Kallang', 'Marina Square', 'NEX',
 'Ng Teng Fong Hospital', 'Northshore Plaza I', 'Oasis Terrace', 'Orchard Gateway',
 'Paya Lebar Quarters', 'Rivervale Mall', 'Seletar Mall', 'Sembawang SC',
-'Sun Plaza', 'Tampines 1', 'The Cathay', 'The Seletar Mall', 'The Woodgrove',
+'Sun Plaza', 'Tampines 1', 'The Cathay','The Woodgrove',
 'Toa Payoh', 'United Square', 'White Sands', 'Wisteria Mall',
 'Woods Square Mall', 'Yew Tee Point'
 ];
