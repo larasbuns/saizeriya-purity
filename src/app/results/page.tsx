@@ -15,21 +15,18 @@ function Results() {
   let title = '';
   let description = '';
 
-  if (score === 0) {
+  if (score <=2) {
     title = 'Saizeriya Infant';
-    description = "You are seriously missing out on the best Japanese-Italian Restaurant on the market.";
-  } else if (score >= 1 && score <= 10) {
-    title = 'Saizeriya Toddler';
-    description = 'You either do not go to Saizeriya often or stay loyal to a few outlets.';
-  } else if (score >= 11 && score <= 24) {
-    title = 'Mid Saizeriya Fan';
-    description = 'Could be better, but not something you\'d ever say about my beloved tiramisu.';
-  } else if (score >= 25 && score < total) {
-    title = 'Ranked Saizeriya Fan';
-    description = 'Wow. Saizeriya consumption is a competition to you, but the ravioli remains undefeated. ';
-  } else if (score === total) {
-    title = 'Saizeriya GOAT';
-    description = 'Incredible! You’ve visited every Saizeriya in Singapore. If anyone can summon the discontinued squid ink, it’s you.';
+    description = "You are too innocent, yet to be deflowered by the best restaurant on earth.";
+  } else if (score >= 2 && score <= 10) {
+    title = 'Casual Relationship with Saizeriya';
+    description = 'You have been exploring but not locked in yet';
+  } else if (score >= 11 && score <= 20) {
+    title = 'Saizeriya Situationship";
+    description = 'You have a fond liking for Saizeriya but do you see a future with Saizeriya';
+  } else if (score >= 20 && score <= total) {
+    title = 'Saizeriya 4 life';
+    description = 'You took Saizeriya as you wedded lover, in sickness or death <3';
   }
 
   return (
