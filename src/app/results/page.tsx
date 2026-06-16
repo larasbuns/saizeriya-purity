@@ -16,17 +16,17 @@ function Results() {
   let description = '';
 
   if (score <=2) {
-    title = 'Saizeriya Infant';
+    title =  "Saizeriya Infant";
     description = "You are too innocent, yet to be deflowered by the best restaurant on earth.";
   } else if (score >= 2 && score <= 10) {
-    title = 'Casual Relationship with Saizeriya';
-    description = 'You have been exploring but not locked in yet';
+    title = "Casual Relationship with Saizeriya";
+    description = "You have been exploring but not locked in yet";
   } else if (score >= 11 && score <= 20) {
-    title = 'Saizeriya Situationship";
-    description = 'You have a fond liking for Saizeriya but do you see a future with Saizeriya';
+    title = "Saizeriya Situationship";
+    description = "You have a fond liking for Saizeriya but do you see a future with Saizeriya";
   } else if (score >= 20 && score <= total) {
-    title = 'Saizeriya 4 life';
-    description = 'You took Saizeriya as you wedded lover, in sickness or death <3';
+    title = "Saizeriya 4 life";
+    description = "You took Saizeriya as you wedded lover, in sickness or death <3";
   }
 
   return (
